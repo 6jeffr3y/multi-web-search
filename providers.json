@@ -1,0 +1,205 @@
+{
+  "settings": {
+    "request_timeout_seconds": 35,
+    "max_concurrency": 6,
+    "max_connections": 16,
+    "http2": true,
+    "cache_ttl_seconds": 300,
+    "cache_max_entries": 256,
+    "max_chars_per_source": 1800,
+    "max_answer_chars": 12000,
+    "auto_prefer_family": ""
+  },
+  "providers": [
+    {
+      "name": "deepseek-native",
+      "family": "deepseek",
+      "category": "native_search_api",
+      "adapter": "deepseek_search_api",
+      "route": "native",
+      "produces_answer": false,
+      "enabled": true,
+      "priority": 3,
+      "endpoint": "https://api.deepseek.com/v1/tools/search",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "need_content": false,
+      "timeout_seconds": 20,
+      "retries": 1,
+      "circuit_breaker_failures": 2,
+      "circuit_breaker_seconds": 30,
+      "notes": "DeepSeek 官方 Search API（/v1/tools/search）。单次 HTTP 往返、无模型 token，fast 模式首选。返回裸结果。"
+    },
+    {
+      "name": "deepseek-official",
+      "family": "deepseek",
+      "category": "ai_model_with_native_search",
+      "adapter": "deepseek_anthropic_search",
+      "route": "model",
+      "produces_answer": true,
+      "enabled": true,
+      "priority": 5,
+      "endpoint": "https://api.deepseek.com/anthropic/v1/messages",
+      "model": "deepseek-flash",
+      "max_tokens": 2048,
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "timeout_seconds": 45,
+      "retries": 1,
+      "circuit_breaker_failures": 2,
+      "circuit_breaker_seconds": 30,
+      "notes": "DeepSeek 官方 Anthropic Messages 服务端联网搜索（模型带答案）。balanced 模式优先。deep 模式优先。"
+    },
+    {
+      "name": "mimo",
+      "family": "mimo",
+      "category": "ai_model_with_native_search",
+      "adapter": "mimo_chat",
+      "route": "model",
+      "produces_answer": true,
+      "enabled": true,
+      "priority": 10,
+      "endpoint": "https://token-plan-cn.xiaomimimo.com/v1/chat/completions",
+      "model": "mimo-v2.6-flash",
+      "api_key_env": "MIMO_WEB_SEARCH_API_KEY",
+      "endpoint_by_key_prefix": {
+        "sk-": "https://api.xiaomimimo.com/v1/chat/completions",
+        "tp-": "https://token-plan-cn.xiaomimimo.com/v1/chat/completions",
+        "ttp-": "https://token-plan-cn.xiaomimimo.com/v1/chat/completions"
+      },
+      "timeout_seconds": 35,
+      "retries": 1,
+      "circuit_breaker_failures": 2,
+      "circuit_breaker_seconds": 30,
+      "notes": "优先读取 MIMO_WEB_SEARCH_API_KEY。sk- Key 自动走按量 API。联网服务插件单独计费且必须在控制台开通。"
+    },
+    {
+      "name": "glm-zai",
+      "family": "glm",
+      "category": "ai_model_with_native_search",
+      "adapter": "zai_chat_search",
+      "route": "model",
+      "produces_answer": true,
+      "enabled": false,
+      "priority": 20,
+      "endpoint": "https://api.z.ai/api/paas/v4/chat/completions",
+      "model": "glm-5.3-flash",
+      "search_engine": "search-prime",
+      "api_key_env": [
+        "ZAI_API_KEY",
+        "GLM_API_KEY"
+      ],
+      "timeout_seconds": 40,
+      "retries": 1
+    },
+    {
+      "name": "deepseek-dashscope",
+      "family": "deepseek",
+      "category": "ai_model_with_managed_search",
+      "adapter": "dashscope_chat",
+      "route": "model",
+      "produces_answer": true,
+      "enabled": false,
+      "priority": 30,
+      "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+      "model": "deepseek-v3.2",
+      "api_key_env": "DASHSCOPE_API_KEY",
+      "timeout_seconds": 45,
+      "retries": 1,
+      "notes": "阿里云百炼托管的 DeepSeek 联网搜索；DeepSeek 官方已提供 /v1/tools/search，本条目仅作备用线路，需要单独的 DashScope Key。"
+    },
+    {
+      "name": "deepseek-v4-dashscope-responses",
+      "family": "deepseek",
+      "category": "ai_model_with_managed_search",
+      "adapter": "openai_responses_search",
+      "route": "model",
+      "produces_answer": true,
+      "enabled": false,
+      "priority": 35,
+      "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/responses",
+      "model": "deepseek-v4-flash",
+      "tools": [
+        {
+          "type": "web_search"
+        }
+      ],
+      "api_key_env": "DASHSCOPE_API_KEY"
+    },
+    {
+      "name": "glm-dashscope-responses",
+      "family": "glm",
+      "category": "ai_model_with_managed_search",
+      "adapter": "openai_responses_search",
+      "route": "model",
+      "produces_answer": true,
+      "enabled": false,
+      "priority": 40,
+      "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/responses",
+      "model": "glm-5.2",
+      "tools": [
+        {
+          "type": "web_search"
+        }
+      ],
+      "api_key_env": "DASHSCOPE_API_KEY"
+    },
+    {
+      "name": "qwen-dashscope",
+      "family": "qwen",
+      "category": "ai_model_with_managed_search",
+      "adapter": "dashscope_chat",
+      "route": "model",
+      "produces_answer": true,
+      "enabled": false,
+      "priority": 50,
+      "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+      "model": "qwen-plus",
+      "api_key_env": "DASHSCOPE_API_KEY"
+    },
+    {
+      "name": "gemini-google",
+      "family": "gemini",
+      "category": "ai_model_with_native_search",
+      "adapter": "gemini_google_search",
+      "route": "model",
+      "produces_answer": true,
+      "enabled": false,
+      "priority": 60,
+      "endpoint": "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+      "model": "gemini-2.5-flash",
+      "api_key_env": "GEMINI_API_KEY"
+    },
+    {
+      "name": "custom-chat-search",
+      "category": "ai_model_with_search",
+      "adapter": "openai_chat_search",
+      "enabled": false,
+      "priority": 100,
+      "endpoint": "https://example.com/v1/chat/completions",
+      "model": "replace-with-search-capable-model",
+      "api_key_env": "CUSTOM_SEARCH_API_KEY",
+      "request_overrides": {
+        "tools": [
+          {
+            "type": "web_search"
+          }
+        ],
+        "tool_choice": "auto"
+      }
+    },
+    {
+      "name": "custom-responses-search",
+      "category": "ai_model_with_search",
+      "adapter": "openai_responses_search",
+      "enabled": false,
+      "priority": 110,
+      "endpoint": "https://example.com/v1/responses",
+      "model": "replace-with-search-capable-model",
+      "tools": [
+        {
+          "type": "web_search"
+        }
+      ],
+      "api_key_env": "CUSTOM_SEARCH_API_KEY"
+    }
+  ]
+}
