@@ -77,6 +77,12 @@ python3 -m pip install -r requirements.txt
 配置文件包含启用状态。
 配置文件包含优先级。
 配置文件包含 API Key 来源。
+配置文件内置多个供应商模板。
+供应商通过 `enabled` 控制启用状态。
+供应商通过 `priority` 控制优先级。
+API Key 来源字段为 `api_key_env`。
+API Key 来源字段为 `api_key_file`。
+API Key 来源字段为 `api_key_toml`。
 配置修改后自动加载。
 个人配置建议保存为 `providers.local.json`。
 `MULTI_WEB_SEARCH_CONFIG` 可指定配置文件路径。
